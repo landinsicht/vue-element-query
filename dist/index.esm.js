@@ -162,19 +162,21 @@ var plugin = {
         $_elementQueryMixin_init: function $_elementQueryMixin_init() {
           var _this2 = this;
 
-          this.$data.$_elementQueryMixin_resizeObserver = this.$el !== undefined && new ResizeObserver(function (_ref2) {
-            var _ref3 = _slicedToArray(_ref2, 1),
-                entry = _ref3[0];
+          this.$nextTick(function () {
+            _this2.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver(function (_ref2) {
+              var _ref3 = _slicedToArray(_ref2, 1),
+                  entry = _ref3[0];
 
-            var _entry$contentRect = entry.contentRect,
-                height = _entry$contentRect.height,
-                width = _entry$contentRect.width;
+              var _entry$contentRect = entry.contentRect,
+                  height = _entry$contentRect.height,
+                  width = _entry$contentRect.width;
 
-            if (_this2.$data.$_elementQueryMixin_size) {
-              _this2.$data.$_elementQueryMixin_size.height = height;
-              _this2.$data.$_elementQueryMixin_size.width = width;
-            }
-          }).observe(this.$el);
+              if (_this2.$data.$_elementQueryMixin_size) {
+                _this2.$data.$_elementQueryMixin_size.height = height;
+                _this2.$data.$_elementQueryMixin_size.width = width;
+              }
+            }).observe(_this2.$el);
+          });
         },
 
         /**
