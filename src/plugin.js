@@ -64,7 +64,19 @@ export default {
          * initialize the ResizeObserver for this component
          */
         $_elementQueryMixin_init() {
+          function isElement(element) {
+            return (
+              element instanceof Element || element instanceof HTMLDocument
+            );
+          }
           this.$nextTick(() => {
+            if (!this.$el) {
+              return;
+            }
+
+            if (!isElement(this.$el)) {
+              return;
+            }
             this.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver(
               ([entry]) => {
                 const { height, width } = entry.contentRect;

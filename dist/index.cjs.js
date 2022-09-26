@@ -168,7 +168,19 @@ var plugin = {
         $_elementQueryMixin_init: function $_elementQueryMixin_init() {
           var _this2 = this;
 
+          function isElement(element) {
+            return element instanceof Element || element instanceof HTMLDocument;
+          }
+
           this.$nextTick(function () {
+            if (!_this2.$el) {
+              return;
+            }
+
+            if (!isElement(_this2.$el)) {
+              return;
+            }
+
             _this2.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver__default["default"](function (_ref2) {
               var _ref3 = _slicedToArray(_ref2, 1),
                   entry = _ref3[0];
