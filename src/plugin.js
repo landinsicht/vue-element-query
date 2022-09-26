@@ -1,5 +1,7 @@
+import ResizeObserver from "resize-observer-polyfill";
+
 export default {
-  install(Vue, { debounce = 0 } = {}) {
+  install(Vue) {
     Vue.mixin({
       data() {
         return {
@@ -8,45 +10,43 @@ export default {
             width: null,
             height: null
           },
-          eq: null
+          $_elementQueryMixin_eq: null
         };
       },
       computed: {
         $eq() {
           if (
-            this.eq &&
-            this.eq.breakpoints &&
-            // mark this.eqSize.width and this.eqSize.height as dependencies
+            this.$data.$_elementQueryMixin_eq &&
+            this.$data.$_elementQueryMixin_eq.breakpoints &&
+            this.$data.$_elementQueryMixin_size &&
+            // mark this.$data.$_elementQueryMixin_size.width and this.$data.$_elementQueryMixin_size.height as dependencies
             // for the reactivity of the computed breakpoints-property
-            typeof this.eqSize.width === "number" &&
-            typeof this.eqSize.height === "number"
+            typeof this.$data.$_elementQueryMixin_size.width === "number" &&
+            typeof this.$data.$_elementQueryMixin_size.height === "number"
           ) {
             // iterate over all queries and set their state
             // base on the query they have as properties
-            const instance = Object.keys(this.eq.breakpoints).reduce(
+            return Object.keys(
+              this.$data.$_elementQueryMixin_eq.breakpoints
+            ).reduce(
               (accumulator, currentValue) => ({
                 ...accumulator,
                 [currentValue]: this.$_elementQueryMixin_checkAllConditions(
-                  this.eq.breakpoints[currentValue]
+                  this.$data.$_elementQueryMixin_eq.breakpoints[currentValue]
                 )
               }),
               { ready: true }
             );
-
-            // bind public methods to the $eq instance
-            instance.forceUpdate = this.$_elementQueryMixin_forceUpdate;
-
-            return instance;
           }
 
           return { ready: false };
         }
       },
       watch: {
-        eq(value) {
-          // $options.eq have been assigned a value
-          // and no resize listener was active => initialize
-          if (value && !this.resizeListenerActive) {
+        // eslint-disable-next-line func-names
+        "$data.$_elementQueryMixin_eq": function({ breakpoints } = {}) {
+          if (breakpoints) {
+            // $options.eq have been assigned a value
             this.$_elementQueryMixin_init();
           }
         }
@@ -54,64 +54,35 @@ export default {
       mounted() {
         // make $options.eq reactive by
         // assigning it to the component data
-        this.eq = this.$options.eq;
-
-        this.$_elementQueryMixin_init();
+        this.$data.$_elementQueryMixin_eq = this.$options.eq;
       },
       beforeDestroy() {
         this.$_elementQueryMixin_destroy();
       },
       methods: {
         /**
-         * initialize the mixin, add a resize listener and
-         * calculate the initial width and height of the component
+         * initialize the ResizeObserver for this component
          */
         $_elementQueryMixin_init() {
-          if (this.eq && this.eq.breakpoints) {
-            window.addEventListener(
-              "resize",
-              this.$_elementQueryMixin_debouncedResize
-            );
+          this.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver(
+            ([entry]) => {
+              const { height, width } = entry.contentRect;
 
-            this.resizeListenerActive = true;
-
-            this.$_elementQueryMixin_resize();
-          }
+              if (this.$data.$_elementQueryMixin_size) {
+                this.$data.$_elementQueryMixin_size.height = height;
+                this.$data.$_elementQueryMixin_size.width = width;
+              }
+            }
+          ).observe(this.$el);
         },
 
         /**
-         * destroy the mixin, remove the resize listener if it was active
+         * Stop observing the current element and disconnect the ResizeObserver
          */
         $_elementQueryMixin_destroy() {
-          if (this.resizeListenerActive) {
-            window.removeEventListener(
-              "resize",
-              this.$_elementQueryMixin_debouncedResize
-            );
-
-            this.resizeListenerActive = false;
+          if (this.$data.$_elementQueryMixin_resizeObserver) {
+            this.$data.$_elementQueryMixin_resizeObserver.disconnect();
           }
-        },
-
-        /**
-         * gets the current component eqSize (height & width)
-         * based on the client sizes of the element
-         */
-        $_elementQueryMixin_resize() {
-          this.eqSize.height = this.$el.clientHeight;
-          this.eqSize.width = this.$el.clientWidth;
-        },
-
-        /**
-         * debounces the resize event as it is bound to the window.resize event
-         * this uses the component `eq.debounce` value,
-         * with a fallback to plugin debounce value (if it's specified)
-         */
-        $_elementQueryMixin_debouncedResize() {
-          clearTimeout(this.debounceTimer);
-          this.debounceTimer = setTimeout(() => {
-            this.$_elementQueryMixin_resize();
-          }, (this.eq && this.eq.debounce) || debounce);
         },
 
         /**
@@ -137,25 +108,17 @@ export default {
         $_elementQueryMixin_checkCondition(type, value) {
           switch (type) {
             case "minWidth":
-              return this.eqSize.width >= value;
+              return this.$data.$_elementQueryMixin_size.width >= value;
             case "maxWidth":
-              return this.eqSize.width <= value;
+              return this.$data.$_elementQueryMixin_size.width <= value;
             case "minHeight":
-              return this.eqSize.height >= value;
+              return this.$data.$_elementQueryMixin_size.height >= value;
             case "maxHeight":
-              return this.eqSize.height <= value;
+              return this.$data.$_elementQueryMixin_size.height <= value;
             // no default
           }
 
           return false;
-        },
-
-        /**
-         * if an element changed eqSize outside of `window.resize`
-         * call this method to force an update on the breakpoints
-         */
-        $_elementQueryMixin_forceUpdate() {
-          this.$_elementQueryMixin_resize();
         }
       }
     });
