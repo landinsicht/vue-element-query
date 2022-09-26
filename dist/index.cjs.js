@@ -168,7 +168,7 @@ var plugin = {
         $_elementQueryMixin_init: function $_elementQueryMixin_init() {
           var _this2 = this;
 
-          this.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver__default["default"](function (_ref2) {
+          this.$data.$_elementQueryMixin_resizeObserver = this.$el !== undefined && new ResizeObserver__default["default"](function (_ref2) {
             var _ref3 = _slicedToArray(_ref2, 1),
                 entry = _ref3[0];
 
