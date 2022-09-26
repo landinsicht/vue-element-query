@@ -64,16 +64,16 @@ export default {
          * initialize the ResizeObserver for this component
          */
         $_elementQueryMixin_init() {
-          this.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver(
-            ([entry]) => {
+          this.$data.$_elementQueryMixin_resizeObserver =
+            this.$el !== undefined &&
+            new ResizeObserver(([entry]) => {
               const { height, width } = entry.contentRect;
 
               if (this.$data.$_elementQueryMixin_size) {
                 this.$data.$_elementQueryMixin_size.height = height;
                 this.$data.$_elementQueryMixin_size.width = width;
               }
-            }
-          ).observe(this.$el);
+            }).observe(this.$el);
         },
 
         /**
