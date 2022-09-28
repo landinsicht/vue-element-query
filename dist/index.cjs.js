@@ -1,12 +1,5 @@
 'use strict';
 
-require('babel-polyfill');
-var ResizeObserver = require('resize-observer-polyfill');
-
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-var ResizeObserver__default = /*#__PURE__*/_interopDefaultLegacy(ResizeObserver);
-
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
 
@@ -181,7 +174,7 @@ var plugin = {
               return;
             }
 
-            _this2.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver__default["default"](function (_ref2) {
+            _this2.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver(function (_ref2) {
               var _ref3 = _slicedToArray(_ref2, 1),
                   entry = _ref3[0];
 

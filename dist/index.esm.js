@@ -1,6 +1,3 @@
-import 'babel-polyfill';
-import ResizeObserver from 'resize-observer-polyfill';
-
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
 

@@ -1,5 +1,3 @@
-import ResizeObserver from "resize-observer-polyfill";
-
 export default {
   install(Vue) {
     Vue.mixin({
