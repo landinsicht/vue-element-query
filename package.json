@@ -1,6 +1,6 @@
 {
   "name": "vue-element-query",
-  "version": "3.2.2",
+  "version": "3.4.0",
   "description": "VueJS mixin plugin for creating element size queries in components",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -37,7 +37,8 @@
   ],
   "dependencies": {
     "resize-observer-polyfill": "^1.5.0",
-    "vue": "~2.6.14"
+    "vue": "~2.6.14",
+    "lodash.debounce": "^4.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
