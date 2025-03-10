@@ -1,5 +1,11 @@
 'use strict';
 
+var debounce = require('lodash.debounce');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var debounce__default = /*#__PURE__*/_interopDefaultLegacy(debounce);
+
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
 
@@ -174,7 +180,7 @@ var plugin = {
               return;
             }
 
-            _this2.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver(function (_ref2) {
+            _this2.$data.$_elementQueryMixin_resizeObserver = new ResizeObserver(debounce__default["default"](function (_ref2) {
               var _ref3 = _slicedToArray(_ref2, 1),
                   entry = _ref3[0];
 
@@ -186,7 +192,7 @@ var plugin = {
                 _this2.$data.$_elementQueryMixin_size.height = height;
                 _this2.$data.$_elementQueryMixin_size.width = width;
               }
-            }).observe(_this2.$el);
+            }, 100)).observe(_this2.$el);
           });
         },
 
